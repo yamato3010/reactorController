@@ -54,16 +54,24 @@ def timer():
     dt_set = datetime.datetime.now()
     dt_set = dt_set.replace(hour=HOUR, minute=MINUTE, second=0, microsecond=0)
     dt_now = datetime.datetime.now()
+    dt_timedelta = 10
     print("モードは" + str(flashMode.get()) + "です")
     if(TIMERON == True):
         print("["+str(dt_now.hour) + ":" + str(dt_now.minute) + "]" + "タイマーはONです " + str(HOUR) + ":" + str(MINUTE) + "に消灯します")
+        if(flashMode.get() == 1):
+            dt_timedelta = 20
+        elif(flashMode.get() == 2):
+            dt_timedelta = 30
+        else:
+            dt_timedelta = 10
         # 点滅状態10分前
-        dt_tmp = dt_set + datetime.timedelta(minutes=-10)
+        dt_tmp = dt_set + datetime.timedelta(minutes=-dt_timedelta)
+        print("10分前は" + str(dt_tmp.hour) + ":" + str(dt_tmp.minute))
         if dt_now.hour == dt_set.hour and dt_now.minute == dt_tmp.minute:
             client.send_message("/avatar/parameters/reactorState", 2)
             print("消灯10分前です")
         # はやい点滅状態5分前
-        dt_tmp = dt_set + datetime.timedelta(minutes=-5)
+        dt_tmp = dt_set + datetime.timedelta(minutes=-dt_timedelta/2)
         if dt_now.hour == dt_set.hour and dt_now.minute == dt_tmp.minute:
             client.send_message("/avatar/parameters/reactorState", 3)
             print("消灯5分前です")
@@ -109,11 +117,11 @@ def buttonSetTime_click():
 
 # 画面の描画
 baseGround = tk.Tk()
-baseGround.geometry("305x370")
+baseGround.geometry("305x230")
 baseGround.resizable(width=False, height=False)
 baseGround.title("ReactorControler")
 flashMode = IntVar()
-labelReactorState = ttk.Label(text='リアクターの状態', foreground='black').grid(row=0, column=0, columnspan=4,sticky=tk.W)
+labelReactorState = ttk.Label(text='リアクター手動制御', foreground='black').grid(row=0, column=0, columnspan=4,sticky=tk.W)
 buttonON = ttk.Button(
     baseGround, text = 'Active', command=buttonON_click).grid(row=1, column=0)
 buttonOFF = ttk.Button(
